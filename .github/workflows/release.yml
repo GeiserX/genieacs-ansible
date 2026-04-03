@@ -12,6 +12,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Verify tag matches galaxy.yml version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          GALAXY_VERSION=$(python3 -c "import yaml; print(yaml.safe_load(open('galaxy.yml'))['version'])")
+          if [ "$TAG_VERSION" != "$GALAXY_VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match galaxy.yml version $GALAXY_VERSION"
+            exit 1
+          fi
       - run: pip install ansible-core
       - run: ansible-galaxy collection build --force
       - run: ansible-galaxy collection publish geiserx-genieacs-*.tar.gz --api-key "${{ secrets.GALAXY_API_KEY }}"

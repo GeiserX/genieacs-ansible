@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# Copyright (C) 2026 Sergio Fernandez (@GeiserX)
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Ansible module to create tasks on GenieACS devices."""
 
 from __future__ import annotations
@@ -7,8 +9,8 @@ DOCUMENTATION = r"""
 module: genieacs_task
 short_description: Create a task on a GenieACS CPE device
 description:
-  - Enqueue a task (reboot, firmware download, get/set parameter values)
-    on a device managed by GenieACS via the NBI API.
+  - Enqueue a task (reboot, firmware download, get/set parameter values,
+    add/delete/refresh objects) on a device managed by GenieACS via the NBI API.
 version_added: "0.1.0"
 author:
   - Sergio Fernandez (@GeiserX)
@@ -25,14 +27,13 @@ options:
     description: Basic-auth password.
     type: str
     default: ""
-    no_log: true
   device_id:
     description: The GenieACS device ID.
     required: true
     type: str
   task_name:
     description: >-
-      Task type. One of: reboot, download, getParameterValues,
+      Task type. One of reboot, download, getParameterValues,
       setParameterValues, addObject, deleteObject, refreshObject.
     required: true
     type: str
@@ -46,7 +47,7 @@ options:
       - refreshObject
   parameter_names:
     description: >-
-      List of parameter paths for getParameterValues / refreshObject.
+      List of parameter paths for getParameterValues.
     type: list
     elements: str
     default: []
@@ -57,6 +58,12 @@ options:
     type: list
     elements: list
     default: []
+  object_name:
+    description: >-
+      TR-069 object path for refreshObject, addObject, or deleteObject.
+      Example: "InternetGatewayDevice.WANDevice.1.WANConnectionDevice."
+    type: str
+    default: ""
   file_id:
     description: File ID (from GridFS) for download tasks.
     type: str
@@ -88,6 +95,20 @@ EXAMPLES = r"""
     device_id: "001122-Device-AABBCC"
     task_name: download
     file_id: "firmware-v2.0.bin"
+
+- name: Refresh an object tree
+  geiserx.genieacs.genieacs_task:
+    acs_url: http://genieacs:7557
+    device_id: "001122-Device-AABBCC"
+    task_name: refreshObject
+    object_name: "InternetGatewayDevice.WANDevice.1."
+
+- name: Add a new WAN connection instance
+  geiserx.genieacs.genieacs_task:
+    acs_url: http://genieacs:7557
+    device_id: "001122-Device-AABBCC"
+    task_name: addObject
+    object_name: "InternetGatewayDevice.WANDevice.1.WANConnectionDevice."
 """
 
 RETURN = r"""
@@ -97,7 +118,7 @@ task:
   returned: success
 """
 
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import AnsibleModule, env_fallback
 
 try:
     from ansible_collections.geiserx.genieacs.plugins.module_utils.genieacs_client import (
@@ -111,9 +132,9 @@ except ImportError:
 def main():
     module = AnsibleModule(
         argument_spec=dict(
-            acs_url=dict(type="str", required=True),
-            acs_username=dict(type="str", default=""),
-            acs_password=dict(type="str", default="", no_log=True),
+            acs_url=dict(type="str", required=True, fallback=(env_fallback, ["ACS_URL"])),
+            acs_username=dict(type="str", default="", fallback=(env_fallback, ["ACS_USER"])),
+            acs_password=dict(type="str", default="", no_log=True, fallback=(env_fallback, ["ACS_PASS"])),
             device_id=dict(type="str", required=True),
             task_name=dict(
                 type="str", required=True,
@@ -122,6 +143,7 @@ def main():
             ),
             parameter_names=dict(type="list", elements="str", default=[]),
             parameter_values=dict(type="list", elements="list", default=[]),
+            object_name=dict(type="str", default=""),
             file_id=dict(type="str", default=""),
             timeout_ms=dict(type="int", default=3000),
         ),
@@ -140,12 +162,14 @@ def main():
     task_body: dict = {"name": module.params["task_name"]}
 
     name = module.params["task_name"]
-    if name in ("getParameterValues", "refreshObject"):
+    if name == "getParameterValues":
         task_body["parameterNames"] = module.params["parameter_names"]
     elif name == "setParameterValues":
         task_body["parameterValues"] = module.params["parameter_values"]
     elif name == "download":
         task_body["file"] = module.params["file_id"]
+    elif name in ("refreshObject", "addObject", "deleteObject"):
+        task_body["objectName"] = module.params["object_name"]
 
     try:
         result = client.create_task(

@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Sergio Fernandez (@GeiserX)
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Dynamic inventory plugin for GenieACS.
 
 Pulls devices from a GenieACS NBI endpoint and groups them
@@ -45,7 +47,6 @@ options:
     description: Basic-auth password for the NBI API.
     type: str
     default: ""
-    secret: true
     env:
       - name: ACS_PASS
   device_query:
@@ -60,7 +61,7 @@ options:
     default: 0
   groups_from:
     description: >-
-      List of grouping strategies. Supported values:
+      List of grouping strategies. Supported values -
       manufacturer, model, firmware, tags.
     type: list
     elements: str

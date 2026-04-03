@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# Copyright (C) 2026 Sergio Fernandez (@GeiserX)
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Ansible module to manage GenieACS presets."""
 
 from __future__ import annotations
@@ -25,7 +27,6 @@ options:
     description: Basic-auth password.
     type: str
     default: ""
-    no_log: true
   name:
     description: Preset name (unique identifier in GenieACS).
     required: true
@@ -43,8 +44,8 @@ options:
     default: ""
   events:
     description: >-
-      Dict mapping event names to booleans. Common events:
-      0 BOOTSTRAP, 1 BOOT, 2 PERIODIC, 3 VALUE CHANGE, 4 CONNECTION REQUEST, etc.
+      Dict mapping event names to booleans. Common events -
+      0 BOOTSTRAP, 1 BOOT, 2 PERIODIC, 3 VALUE CHANGE, 4 CONNECTION REQUEST.
     type: dict
     default: {}
   provisions:
@@ -85,7 +86,7 @@ preset:
   returned: when state=present
 """
 
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import AnsibleModule, env_fallback
 
 try:
     from ansible_collections.geiserx.genieacs.plugins.module_utils.genieacs_client import (
@@ -99,9 +100,9 @@ except ImportError:
 def main():
     module = AnsibleModule(
         argument_spec=dict(
-            acs_url=dict(type="str", required=True),
-            acs_username=dict(type="str", default=""),
-            acs_password=dict(type="str", default="", no_log=True),
+            acs_url=dict(type="str", required=True, fallback=(env_fallback, ["ACS_URL"])),
+            acs_username=dict(type="str", default="", fallback=(env_fallback, ["ACS_USER"])),
+            acs_password=dict(type="str", default="", no_log=True, fallback=(env_fallback, ["ACS_PASS"])),
             name=dict(type="str", required=True),
             state=dict(type="str", default="present", choices=["present", "absent"]),
             precondition=dict(type="str", default=""),
@@ -121,7 +122,6 @@ def main():
     name = module.params["name"]
     state = module.params["state"]
 
-    # Check current state
     try:
         existing = {p["_id"]: p for p in client.list_presets()}
     except GenieACSError as exc:
@@ -150,7 +150,6 @@ def main():
 
     if exists:
         old = existing[name]
-        # Compare relevant fields
         changed = (
             old.get("precondition", "") != preset["precondition"]
             or old.get("events", {}) != preset["events"]

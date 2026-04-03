@@ -1,11 +1,13 @@
+# Copyright (C) 2026 Sergio Fernandez (@GeiserX)
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Thin wrapper around the GenieACS NBI REST API."""
 
 from __future__ import annotations
 
 import json
-from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlencode
-from urllib.request import Request, urlopen
+
+from ansible.module_utils.urls import open_url
 
 __all__ = ["GenieACSClient", "GenieACSError"]
 
@@ -20,29 +22,26 @@ class GenieACSClient:
     def __init__(self, base_url: str, username: str = "", password: str = "", timeout: int = 30):
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
-        self._auth_header = None
-        if username:
-            import base64
-            cred = base64.b64encode(f"{username}:{password}".encode()).decode()
-            self._auth_header = f"Basic {cred}"
+        self._username = username
+        self._password = password
 
     def _request(self, method: str, path: str, query: dict | None = None,
                  data: bytes | None = None, content_type: str = "application/json") -> bytes:
         url = f"{self.base_url}{path}"
         if query:
             url += "?" + urlencode(query)
-        req = Request(url, data=data, method=method)
-        req.add_header("Content-Type", content_type)
-        if self._auth_header:
-            req.add_header("Authorization", self._auth_header)
         try:
-            with urlopen(req, timeout=self.timeout) as resp:
-                return resp.read()
-        except HTTPError as exc:
-            body = exc.read().decode(errors="replace")
-            raise GenieACSError(f"HTTP {exc.code} on {method} {path}: {body}") from exc
-        except URLError as exc:
-            raise GenieACSError(f"Connection failed: {exc.reason}") from exc
+            resp = open_url(
+                url, data=data, method=method,
+                headers={"Content-Type": content_type},
+                url_username=self._username or None,
+                url_password=self._password or None,
+                force_basic_auth=bool(self._username),
+                timeout=self.timeout,
+            )
+            return resp.read()
+        except Exception as exc:
+            raise GenieACSError(f"{method} {path} failed: {exc}") from exc
 
     def _get_json(self, path: str, query: dict | None = None) -> list | dict:
         raw = self._request("GET", path, query=query)

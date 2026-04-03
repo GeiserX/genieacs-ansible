@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# Copyright (C) 2026 Sergio Fernandez (@GeiserX)
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Ansible module to manage GenieACS provision scripts."""
 
 from __future__ import annotations
@@ -24,7 +26,6 @@ options:
     description: Basic-auth password.
     type: str
     default: ""
-    no_log: true
   name:
     description: Provision script name.
     required: true
@@ -68,7 +69,7 @@ name:
   returned: always
 """
 
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import AnsibleModule, env_fallback
 
 try:
     from ansible_collections.geiserx.genieacs.plugins.module_utils.genieacs_client import (
@@ -82,9 +83,9 @@ except ImportError:
 def main():
     module = AnsibleModule(
         argument_spec=dict(
-            acs_url=dict(type="str", required=True),
-            acs_username=dict(type="str", default=""),
-            acs_password=dict(type="str", default="", no_log=True),
+            acs_url=dict(type="str", required=True, fallback=(env_fallback, ["ACS_URL"])),
+            acs_username=dict(type="str", default="", fallback=(env_fallback, ["ACS_USER"])),
+            acs_password=dict(type="str", default="", no_log=True, fallback=(env_fallback, ["ACS_PASS"])),
             name=dict(type="str", required=True),
             state=dict(type="str", default="present", choices=["present", "absent"]),
             script=dict(type="str", default=""),
@@ -124,7 +125,8 @@ def main():
     # state == present
     script = module.params["script"]
     if module.params["script_file"]:
-        script = open(module.params["script_file"]).read()
+        with open(module.params["script_file"]) as fh:
+            script = fh.read()
 
     if not script:
         module.fail_json(msg="Either 'script' or 'script_file' is required when state=present")

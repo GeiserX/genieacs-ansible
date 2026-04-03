@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/GeiserX/genieacs-docker/main/extra/logo.png" alt="GenieACS" width="200"/>
+  <img src="https://raw.githubusercontent.com/GeiserX/genieacs-container/main/extra/logo.png" alt="GenieACS" width="200"/>
 </p>
 
 <h1 align="center">genieacs-ansible</h1>
@@ -150,7 +150,7 @@ groups_from:
 
 ## Authentication
 
-All plugins support basic auth via parameters or environment variables:
+The inventory plugin reads `ACS_URL`, `ACS_USER`, and `ACS_PASS` from environment variables automatically. Modules also support env vars via `fallback=(env_fallback, ...)`:
 
 | Parameter | Environment Variable | Description |
 |-----------|---------------------|-------------|
@@ -164,7 +164,7 @@ This collection is part of a broader set of tools for working with GenieACS:
 
 | Project | Type | Description |
 |---------|------|-------------|
-| [genieacs-docker](https://github.com/GeiserX/genieacs-docker) | Docker + Helm | Production-ready multi-arch Docker image and Helm chart |
+| [genieacs-container](https://github.com/GeiserX/genieacs-container) | Docker + Helm | Production-ready multi-arch Docker image and Helm chart |
 | [genieacs-mcp](https://github.com/GeiserX/genieacs-mcp) | MCP Server | AI-assisted device management via Model Context Protocol |
 | [genieacs-ha](https://github.com/GeiserX/genieacs-ha) | HA Integration | Home Assistant integration for TR-069 monitoring |
 | [n8n-nodes-genieacs](https://github.com/GeiserX/n8n-nodes-genieacs) | n8n Node | Workflow automation for GenieACS |
