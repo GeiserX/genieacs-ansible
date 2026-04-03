@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote, urlencode, urljoin
+from urllib.parse import quote, urlencode
 from urllib.request import Request, urlopen
 
 __all__ = ["GenieACSClient", "GenieACSError"]
@@ -88,8 +88,8 @@ class GenieACSClient:
         return self._get_json("/provisions")
 
     def put_provision(self, name: str, script: str) -> None:
-        self._request("PUT", f"/provisions/{quote(name, safe='')}", data=script.encode(),
-                       content_type="text/plain")
+        self._request("PUT", f"/provisions/{quote(name, safe='')}",
+                      data=script.encode(), content_type="text/plain")
 
     def delete_provision(self, name: str) -> None:
         self._request("DELETE", f"/provisions/{quote(name, safe='')}")
@@ -99,8 +99,8 @@ class GenieACSClient:
         return self._get_json("/virtual_parameters")
 
     def put_virtual_parameter(self, name: str, script: str) -> None:
-        self._request("PUT", f"/virtual_parameters/{quote(name, safe='')}", data=script.encode(),
-                       content_type="text/plain")
+        self._request("PUT", f"/virtual_parameters/{quote(name, safe='')}",
+                      data=script.encode(), content_type="text/plain")
 
     def delete_virtual_parameter(self, name: str) -> None:
         self._request("DELETE", f"/virtual_parameters/{quote(name, safe='')}")
@@ -120,7 +120,7 @@ class GenieACSClient:
         if version:
             headers_qs["version"] = version
         self._request("PUT", path, query=headers_qs, data=data,
-                       content_type="application/octet-stream")
+                      content_type="application/octet-stream")
 
     def delete_file(self, filename: str) -> None:
         self._request("DELETE", f"/files/{quote(filename, safe='')}")

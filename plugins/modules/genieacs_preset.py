@@ -85,8 +85,6 @@ preset:
   returned: when state=present
 """
 
-import json
-
 from ansible.module_utils.basic import AnsibleModule
 
 try:
