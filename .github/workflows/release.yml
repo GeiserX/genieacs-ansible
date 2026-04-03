@@ -1,0 +1,17 @@
+name: Release to Galaxy
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ansible-core
+      - run: ansible-galaxy collection build --force
+      - run: ansible-galaxy collection publish geiserx-genieacs-*.tar.gz --api-key "${{ secrets.GALAXY_API_KEY }}"

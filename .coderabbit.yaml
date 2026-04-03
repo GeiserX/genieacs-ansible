@@ -1,0 +1,50 @@
+language: "en-US"
+tone_instructions: "Be direct and concise. No fluff."
+
+reviews:
+  profile: "chill"
+  high_level_summary: true
+  collapse_walkthrough: true
+  poem: false
+  sequence_diagrams: false
+  suggested_reviewers: false
+  auto_review:
+    enabled: true
+    drafts: false
+    ignore_title_keywords:
+      - "WIP"
+      - "DO NOT REVIEW"
+  path_instructions:
+    - path: "plugins/**/*.py"
+      instructions: |
+        Verify all modules include DOCUMENTATION, EXAMPLES, and RETURN docstrings.
+        Check that acs_password uses no_log=true.
+        Ensure all API calls go through the shared GenieACSClient.
+    - path: "plugins/inventory/**"
+      instructions: |
+        Verify inventory plugin sets ansible_host from device IP.
+        Check group names are sanitized for Ansible compatibility.
+    - path: "galaxy.yml"
+      instructions: |
+        Ensure version follows semver. Check build_ignore excludes tests and .github.
+  tools:
+    gitleaks:
+      enabled: true
+    actionlint:
+      enabled: true
+    yamllint:
+      enabled: true
+    markdownlint:
+      enabled: true
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  learnings:
+    scope: "local"
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - "AGENTS.md"
+      - "CLAUDE.md"

@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ansible-core flake8
+      - run: flake8 plugins/ --max-line-length 120 --ignore E501,W503
+      - run: ansible-galaxy collection build --force
+      - run: ansible-galaxy collection install geiserx-genieacs-*.tar.gz
+      - run: |
+          ansible-doc -t inventory geiserx.genieacs.genieacs > /dev/null
+          ansible-doc geiserx.genieacs.genieacs_task > /dev/null
+          ansible-doc geiserx.genieacs.genieacs_preset > /dev/null
+          ansible-doc geiserx.genieacs.genieacs_provision > /dev/null

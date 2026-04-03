@@ -1,0 +1,26 @@
+namespace: geiserx
+name: genieacs
+version: 0.1.0
+readme: README.md
+authors:
+  - Sergio Fernandez <acsdesk@protonmail.com>
+description: Ansible collection for GenieACS TR-069 ACS — dynamic inventory plugin and device management modules
+license_file: LICENSE
+tags:
+  - genieacs
+  - tr069
+  - cwmp
+  - acs
+  - cpe
+  - networking
+  - isp
+  - inventory
+  - infrastructure
+repository: https://github.com/GeiserX/genieacs-ansible
+homepage: https://github.com/GeiserX/genieacs-ansible
+issues: https://github.com/GeiserX/genieacs-ansible/issues
+build_ignore:
+  - .github
+  - tests
+  - docs
+  - "*.tar.gz"
