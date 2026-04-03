@@ -23,3 +23,6 @@ jobs:
           ansible-doc geiserx.genieacs.genieacs_task > /dev/null
           ansible-doc geiserx.genieacs.genieacs_preset > /dev/null
           ansible-doc geiserx.genieacs.genieacs_provision > /dev/null
+      - name: Run ansible-test sanity
+        working-directory: /home/runner/.ansible/collections/ansible_collections/geiserx/genieacs
+        run: ansible-test sanity --test validate-modules --test replace-urlopen --python 3.12

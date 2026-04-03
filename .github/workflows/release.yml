@@ -15,7 +15,7 @@ jobs:
       - name: Verify tag matches galaxy.yml version
         run: |
           TAG_VERSION="${GITHUB_REF_NAME#v}"
-          GALAXY_VERSION=$(python3 -c "import yaml; print(yaml.safe_load(open('galaxy.yml'))['version'])")
+          GALAXY_VERSION=$(grep '^version:' galaxy.yml | head -1 | sed 's/version: *//')
           if [ "$TAG_VERSION" != "$GALAXY_VERSION" ]; then
             echo "::error::Tag $GITHUB_REF_NAME does not match galaxy.yml version $GALAXY_VERSION"
             exit 1

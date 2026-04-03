@@ -1,4 +1,7 @@
-# Copyright (C) 2026 Sergio Fernandez (@GeiserX)
+# -*- coding: utf-8 -*-
+
+# Copyright: (c) 2026, Sergio Fernandez (@GeiserX)
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Thin wrapper around the GenieACS NBI REST API."""
 
@@ -26,14 +29,18 @@ class GenieACSClient:
         self._password = password
 
     def _request(self, method: str, path: str, query: dict | None = None,
-                 data: bytes | None = None, content_type: str = "application/json") -> bytes:
+                 data: bytes | None = None, content_type: str = "application/json",
+                 extra_headers: dict | None = None) -> bytes:
         url = f"{self.base_url}{path}"
         if query:
             url += "?" + urlencode(query)
+        headers = {"Content-Type": content_type}
+        if extra_headers:
+            headers.update(extra_headers)
         try:
             resp = open_url(
                 url, data=data, method=method,
-                headers={"Content-Type": content_type},
+                headers=headers,
                 url_username=self._username or None,
                 url_password=self._password or None,
                 force_basic_auth=bool(self._username),
@@ -111,15 +118,15 @@ class GenieACSClient:
     def put_file(self, filename: str, data: bytes, file_type: str = "1 Firmware Upgrade Image",
                  oui: str = "", product_class: str = "", version: str = "") -> None:
         path = f"/files/{quote(filename, safe='')}"
-        headers_qs: dict[str, str] = {"fileType": file_type}
+        hdrs: dict[str, str] = {"fileType": file_type}
         if oui:
-            headers_qs["oui"] = oui
+            hdrs["oui"] = oui
         if product_class:
-            headers_qs["productClass"] = product_class
+            hdrs["productClass"] = product_class
         if version:
-            headers_qs["version"] = version
-        self._request("PUT", path, query=headers_qs, data=data,
-                      content_type="application/octet-stream")
+            hdrs["version"] = version
+        self._request("PUT", path, data=data,
+                      content_type="application/octet-stream", extra_headers=hdrs)
 
     def delete_file(self, filename: str) -> None:
         self._request("DELETE", f"/files/{quote(filename, safe='')}")

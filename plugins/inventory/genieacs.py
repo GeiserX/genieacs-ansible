@@ -1,4 +1,7 @@
-# Copyright (C) 2026 Sergio Fernandez (@GeiserX)
+# -*- coding: utf-8 -*-
+
+# Copyright: (c) 2026, Sergio Fernandez (@GeiserX)
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Dynamic inventory plugin for GenieACS.
 
