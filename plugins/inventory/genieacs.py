@@ -101,6 +101,9 @@ import re
 
 from ansible.errors import AnsibleParserError
 from ansible.plugins.inventory import BaseInventoryPlugin
+from ansible.utils.display import Display
+
+display = Display()
 
 try:
     from ansible_collections.geiserx.genieacs.plugins.module_utils.genieacs_client import (
@@ -157,6 +160,7 @@ class InventoryModule(BaseInventoryPlugin):
             raise AnsibleParserError(f"Failed to fetch devices from GenieACS: {exc}") from exc
 
         self.inventory.add_group("genieacs")
+        seen_hostnames: dict[str, str] = {}
 
         for dev in devices:
             device_id = dev.get("_id", "")
@@ -164,6 +168,13 @@ class InventoryModule(BaseInventoryPlugin):
                 continue
 
             hostname = _safe_group(device_id)
+            if hostname in seen_hostnames:
+                display.warning(
+                    f"GenieACS device ID '{device_id}' sanitizes to hostname '{hostname}' "
+                    f"which collides with device '{seen_hostnames[hostname]}'. "
+                    f"Host vars will be overwritten."
+                )
+            seen_hostnames[hostname] = device_id
             self.inventory.add_host(hostname, group="genieacs")
 
             # Extract common TR-069 summary fields
