@@ -172,8 +172,9 @@ class InventoryModule(BaseInventoryPlugin):
                 display.warning(
                     f"GenieACS device ID '{device_id}' sanitizes to hostname '{hostname}' "
                     f"which collides with device '{seen_hostnames[hostname]}'. "
-                    f"Host vars will be overwritten."
+                    f"Skipping duplicate."
                 )
+                continue
             seen_hostnames[hostname] = device_id
             self.inventory.add_host(hostname, group="genieacs")
 
