@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/GeiserX/genieacs-container/main/extra/logo.png" alt="GenieACS" width="200"/>
+  <img src="docs/images/banner.svg" alt="genieacs-ansible banner" width="900"/>
 </p>
 
 <h1 align="center">genieacs-ansible</h1>
