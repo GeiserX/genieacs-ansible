@@ -182,17 +182,6 @@ This collection is part of a broader set of tools for working with GenieACS:
 | [genieacs-sim-container](https://github.com/GeiserX/genieacs-sim-container) | Simulator | Docker-based GenieACS simulator for testing |
 
 
-## Related Projects
-
-| Project | Description |
-|---------|-------------|
-| [genieacs-container](https://github.com/GeiserX/genieacs-container) | Original and most popular Helm Chart / Container for GenieACS |
-| [genieacs-sim-container](https://github.com/GeiserX/genieacs-sim-container) | Docker for the GenieACS Simulator |
-| [genieacs-ha](https://github.com/GeiserX/genieacs-ha) | Home Assistant custom integration for GenieACS TR-069 router management |
-| [genieacs-mcp](https://github.com/GeiserX/genieacs-mcp) | MCP Server for GenieACS written in Go |
-| [genieacs-services](https://github.com/GeiserX/genieacs-services) | Systemd/Supervisord services for GenieACS processes |
-| [n8n-nodes-genieacs](https://github.com/GeiserX/n8n-nodes-genieacs) | n8n community node for GenieACS TR-069 device management |
-
 ## License
 
 [GPL-3.0](LICENSE)
