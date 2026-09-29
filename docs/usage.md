@@ -11,7 +11,7 @@ The collection ships one inventory plugin and three modules:
 
 ## Dynamic inventory
 
-Each host gets variables: `genieacs_id`, `genieacs_manufacturer`, `genieacs_model`, `genieacs_serial`, `genieacs_firmware`, `genieacs_hardware`, `genieacs_last_inform`, `genieacs_tags`, and `ansible_host` (set to the device IP).
+Each host gets variables: `genieacs_id`, `genieacs_manufacturer`, `genieacs_model`, `genieacs_serial`, `genieacs_firmware`, `genieacs_hardware`, `genieacs_last_inform`, and `genieacs_tags`; `ansible_host` is set to the device IP when GenieACS knows one.
 
 ### Filtering
 
