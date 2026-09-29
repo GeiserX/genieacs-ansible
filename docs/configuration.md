@@ -1,4 +1,19 @@
-# Authentication and security
+# Configuration
+
+## Inventory file
+
+The inventory file must end in `genieacs.yml` or `genieacs.yaml`. Its options:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `plugin` | | Always `geiserx.genieacs.genieacs` |
+| `acs_url` | | GenieACS NBI URL, for example `http://genieacs:7557` (required; env `ACS_URL`) |
+| `acs_username` | `""` | Basic-auth username (env `ACS_USER`) |
+| `acs_password` | `""` | Basic-auth password (env `ACS_PASS`) |
+| `device_query` | `""` | MongoDB-style JSON query to filter devices, for example `'{"_tags":"managed"}'` |
+| `limit` | `0` | Maximum number of devices to fetch; `0` means no limit |
+| `groups_from` | `[manufacturer, model, firmware, tags]` | Which groups to build |
+| `timeout` | `30` | HTTP request timeout in seconds |
 
 ## Authentication
 
