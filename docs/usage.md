@@ -1,4 +1,4 @@
-# Modules
+# Usage
 
 The collection ships one inventory plugin and three modules:
 
@@ -6,8 +6,29 @@ The collection ships one inventory plugin and three modules:
 |------|----------------|-------------|
 | **Inventory** | `geiserx.genieacs.genieacs` | Dynamic inventory that pulls CPE devices and groups them by manufacturer, model, firmware, and tags |
 | **Module** | `geiserx.genieacs.genieacs_task` | Create tasks on devices (reboot, firmware push, get/set parameters) |
-| **Module** | `geiserx.genieacs.genieacs_preset` | CRUD for presets (filter + provision mappings) |
-| **Module** | `geiserx.genieacs.genieacs_provision` | CRUD for provision scripts |
+| **Module** | `geiserx.genieacs.genieacs_preset` | Create, read, update and delete presets (filter + provision mappings) |
+| **Module** | `geiserx.genieacs.genieacs_provision` | Create, read, update and delete provision scripts |
+
+## Dynamic inventory
+
+Each host gets variables: `genieacs_id`, `genieacs_manufacturer`, `genieacs_model`, `genieacs_serial`, `genieacs_firmware`, `genieacs_hardware`, `genieacs_last_inform`, and `genieacs_tags`; `ansible_host` is set to the device IP when GenieACS knows one.
+
+### Filtering
+
+Only include devices with a specific tag:
+
+```yaml
+plugin: geiserx.genieacs.genieacs
+acs_url: http://genieacs:7557
+device_query: '{"_tags":"managed"}'
+limit: 500
+groups_from:
+  - manufacturer
+  - model
+  - tags
+```
+
+All inventory options are on [Configuration](configuration.md#inventory-file).
 
 ## Device tasks
 
