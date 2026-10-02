@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "gans",
+  "project_id": "bcce5afc-8703-40b7-b4e3-123f570a5012"
+}
